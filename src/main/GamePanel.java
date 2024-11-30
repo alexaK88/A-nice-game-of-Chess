@@ -15,10 +15,12 @@ public class GamePanel extends JPanel implements Runnable {
     final int FPS = 60;
     Thread gameThread;
     Board board = new Board();
+    Mouse mouse = new Mouse();
 
     //Pieces on the board
     public static ArrayList<Piece> pieces = new ArrayList<>();
     public static ArrayList<Piece> simPieces = new ArrayList<>();
+    Piece activePiece;
 
     // Colour
     public static final int BLACK = 1;
@@ -28,6 +30,9 @@ public class GamePanel extends JPanel implements Runnable {
     public GamePanel() {
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setBackground(Color.BLACK);
+
+        addMouseMotionListener(mouse);
+        addMouseListener(mouse);
 
         setPieces();
         copyPieces(pieces, simPieces);
@@ -85,7 +90,33 @@ public class GamePanel extends JPanel implements Runnable {
 
     private void update() {
 
+        // Mouse button was pressed
+        if(mouse.pressed) {
+            if(activePiece == null) {
+                // if the activePiece is null, check if you can pick up a piece
+                for(Piece piece : simPieces) {
+                    // if the mouse is on an ally piece, pick it up as the activePiece
+                    if(piece.colour == currentColour &&
+                        piece.col == mouse.x/Board.SQUARE_SIZE &&
+                        piece.row == mouse.y/Board.SQUARE_SIZE) {
+                        activePiece = piece;
+                    }
+                }
+            }
+            else {
+                // if the player is holding a piece, simulate a move
+                simulate();
+            }
+        }
     }
+
+    public void simulate() {
+        // if a piece is being held, update its position
+        activePiece.x = mouse.x - Board.HALF_SQUARE_SIZE;
+        activePiece.y = mouse.y - Board.HALF_SQUARE_SIZE;
+        activePiece.col = activePiece.getCol(activePiece.x);
+        activePiece.row = activePiece.getRow(activePiece.y);
+     }
 
     /*
     Drawing handling
@@ -100,6 +131,17 @@ public class GamePanel extends JPanel implements Runnable {
         //pieces
         for(Piece p: simPieces) {
             p.draw(g2);
+        }
+
+        if(activePiece != null) {
+            g2.setColor(Color.white);
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f));
+            g2.fillRect(activePiece.col*Board.SQUARE_SIZE, activePiece.row*Board.SQUARE_SIZE,
+                    Board.SQUARE_SIZE, Board.SQUARE_SIZE);
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
+
+            // draw the active piece in the end so it won't be hidden by the board or the coloured square
+            activePiece.draw(g2);
         }
     }
 

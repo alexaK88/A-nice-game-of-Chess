@@ -17,11 +17,11 @@ public class Board {
         for(int row = 0; row < MAX_ROW; row++) {
             for(int col=0; col < MAX_COL; col++) {
                 if(c == 0) {
-                    g2.setColor(new Color(180, 144, 113));
+                    g2.setColor(new Color(146, 192, 132));
                     c = 1;
                 }
                 else {
-                    g2.setColor(new Color(154, 87, 38));
+                    g2.setColor(new Color(36, 87, 20));
                     c = 0;
                 }
                 g2.fillRect(col*SQUARE_SIZE, row*SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE); // x, y, width, height
