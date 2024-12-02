@@ -1,11 +1,13 @@
 package piece;
 
 import main.GamePanel;
+import main.Type;
 
 public class Rook extends Piece{
 
     public Rook(int colour, int col, int row) {
         super(colour, col, row);
+        type = Type.ROOK;
 
         if(colour == GamePanel.WHITE) {
             image = getImage("/piece/w-rook");
